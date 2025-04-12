@@ -1,39 +1,27 @@
-// main.js
+var SW = window.innerWidth, SH = window.innerHeight;
 
-import { createDashboard } from './components/dashboard.js';
-import { setupControls } from './components/controls.js';
-import { addLights } from './components/lights.js';
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(75, SW / SH, 0.1, 1000);// fov, aspect, near/far clip planes
+var renderer = new THREE.WebGLRenderer();
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('scene') });
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(SW, SH);
 document.body.appendChild(renderer.domElement);
 
-// Posición inicial
-camera.position.set(0, 2, 5);
+var cabinaPrincipal = new THREE.BoxGeometry(1,1, 1);
+var cabinaPrincipalmMaterial = new THREE.MeshLambertMaterial( { color : 0x00ff00 }); 
+var cabina = new THREE.Mesh( cabinaPrincipal, cabinaPrincipalmMaterial );
+scene.add( cabina );
+camera.position.z = 5;
 
-// Luces
-addLights(scene);
+var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+directionalLight.position.set(0, 0, 5);
+scene.add(directionalLight);
 
-// Cabina
-createDashboard(scene);
-
-// Controles
-setupControls(camera);
-
-
-//Cabina
-
-// Loop de animación
-function animate() {
+function animate(){ 
+	renderer.render(scene, camera);
   requestAnimationFrame(animate);
-  renderer.render(scene, camera);
-}
-animate();
+  cabina.rotation.x += 0.005;
+  cabina.rotation.y += 0.005;
+}       
 
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
+animate();
